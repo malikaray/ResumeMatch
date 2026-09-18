@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Analysis Results | ResumeMatch</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <nav>
+        <a class="logo" href="/">ResumeMatch</a>
+
+        <div>
+            <a href="/">Analyzer</a>
+            <a href="/tracker">Job Tracker</a>
+        </div>
+    </nav>
+
+
+    <main class="container results-container">
+
+        <a class="back-link" href="/">
+            ← Analyze another job
+        </a>
+
+
+        <section class="card result-card">
+
+            <p class="tag">ANALYSIS COMPLETE</p>
+
+            <h1>
+                {% if position %}
+                    {{ position }}
+                {% else %}
+                    Resume Analysis
+                {% endif %}
+            </h1>
+
+            {% if company %}
+                <p class="company">{{ company }}</p>
+            {% endif %}
+
+
+            <div class="score-section">
+
+                <div class="score-circle">
+                    {{ result.score }}%
+                </div>
+
+                <div class="score-info">
+
+                    <h2>Your Match Score</h2>
+
+                    <p>
+                        {{ result.matched|length }}
+                        of
+                        {{ result.required|length }}
+                        detected skills matched.
+                    </p>
+
+                    <div class="progress">
+
+                        <div
+                            class="progress-fill"
+                            style="width: {{ result.score }}%;">
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="result-grid">
+
+                <div class="skill-box">
+
+                    <h3>✓ Matched Skills</h3>
+
+                    {% if result.matched %}
+
+                        <div class="skills">
+
+                            {% for skill in result.matched %}
+                                <span class="skill matched">
+                                    {{ skill }}
+                                </span>
+                            {% endfor %}
+
+                        </div>
+
+                    {% else %}
+
+                        <p>No matching skills were detected.</p>
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="skill-box">
+
+                    <h3>Missing Skills</h3>
+
+                    {% if result.missing %}
+
+                        <div class="skills">
+
+                            {% for skill in result.missing %}
+                                <span class="skill missing">
+                                    {{ skill }}
+                                </span>
+                            {% endfor %}
+
+                        </div>
+
+                    {% else %}
+
+                        <p>No missing skills detected.</p>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <div class="recommendation">
+
+                <h3>Recommendation</h3>
+
+                <p>
+                    {{ result.recommendation }}
+                </p>
+
+            </div>
+
+
+            <form action="/save" method="POST">
+
+                <input
+                    type="hidden"
+                    name="company"
+                    value="{{ company }}">
+
+                <input
+                    type="hidden"
+                    name="position"
+                    value="{{ position }}">
+
+                <input
+                    type="hidden"
+                    name="score"
+                    value="{{ result.score }}">
+
+                <button class="primary-button" type="submit">
+                    Save to Job Tracker
+                </button>
+
+            </form>
+
+        </section>
+
+    </main>
+
+</body>
+</html>

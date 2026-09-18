@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Job Tracker | ResumeMatch</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <nav>
+        <a class="logo" href="/">ResumeMatch</a>
+
+        <div>
+            <a href="/">Analyzer</a>
+            <a href="/tracker">Job Tracker</a>
+        </div>
+    </nav>
+
+
+    <main class="container">
+
+        <section class="tracker-heading">
+
+            <p class="tag">APPLICATION DASHBOARD</p>
+
+            <h1>Job Application Tracker</h1>
+
+            <p>
+                Keep your analyzed job opportunities organized in one place.
+            </p>
+
+        </section>
+
+
+        <section class="stats">
+
+            <div class="stat-card">
+                <p>Total Jobs</p>
+                <h2>{{ total }}</h2>
+            </div>
+
+            <div class="stat-card">
+                <p>Interviews</p>
+                <h2>{{ interviews }}</h2>
+            </div>
+
+            <div class="stat-card">
+                <p>Offers</p>
+                <h2>{{ offers }}</h2>
+            </div>
+
+            <div class="stat-card">
+                <p>Average Match</p>
+                <h2>{{ average_score }}%</h2>
+            </div>
+
+        </section>
+
+
+        <section class="card">
+
+            {% if applications %}
+
+                <div class="table-wrapper">
+
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th>Company</th>
+                                <th>Position</th>
+                                <th>Match</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            {% for application in applications %}
+
+                                <tr>
+
+                                    <td>
+                                        {{ application["company"] }}
+                                    </td>
+
+                                    <td>
+                                        {{ application["position"] }}
+                                    </td>
+
+                                    <td>
+                                        <strong>
+                                            {{ application["score"] }}%
+                                        </strong>
+                                    </td>
+
+                                    <td>
+
+                                        <form
+                                            action="/status/{{ application['id'] }}"
+                                            method="POST">
+
+                                            <select
+                                                name="status"
+                                                onchange="this.form.submit()">
+
+                                                {% for status in [
+                                                    "Saved",
+                                                    "Applied",
+                                                    "Interview",
+                                                    "Offer",
+                                                    "Rejected"
+                                                ] %}
+
+                                                    <option
+                                                        value="{{ status }}"
+                                                        {% if application["status"] == status %}
+                                                            selected
+                                                        {% endif %}>
+
+                                                        {{ status }}
+
+                                                    </option>
+
+                                                {% endfor %}
+
+                                            </select>
+
+                                        </form>
+
+                                    </td>
+
+
+                                    <td>
+
+                                        <form
+                                            action="/delete/{{ application['id'] }}"
+                                            method="POST">
+
+                                            <button
+                                                class="delete-button"
+                                                type="submit">
+
+                                                Delete
+
+                                            </button>
+
+                                        </form>
+
+                                    </td>
+
+                                </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+            {% else %}
+
+                <div class="empty">
+
+                    <h2>No applications yet</h2>
+
+                    <p>
+                        Analyze a job and save it to start building your tracker.
+                    </p>
+
+                    <a class="primary-button link-button" href="/">
+                        Analyze a Job
+                    </a>
+
+                </div>
+
+            {% endif %}
+
+        </section>
+
+    </main>
+
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ResumeMatch | Resume Job Analyzer</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<nav>
+    <a class="logo" href="/">ResumeMatch</a>
+
+    <div>
+        <a href="/">Analyzer</a>
+        <a href="/tracker">Job Tracker</a>
+    </div>
+</nav>
+
+<main class="container">
+
+    <section class="hero">
+
+        <span class="tag">SMART RESUME ANALYSIS</span>
+
+        <h1>
+            Find out how well your resume
+            <span>matches the job.</span>
+        </h1>
+
+        <p>
+            Upload your resume and paste a job description.
+            ResumeMatch identifies matching skills, missing
+            skills, and your overall technical match score.
+        </p>
+
+    </section>
+
+
+    <section class="card analyzer-card">
+
+        <h2>Analyze Your Resume</h2>
+
+        <p class="subtitle">
+            Add the job information and upload your PDF resume.
+        </p>
+
+        {% if error %}
+
+            <div class="error">
+                {{ error }}
+            </div>
+
+        {% endif %}
+
+
+        <form method="POST"
+              enctype="multipart/form-data">
+
+            <div class="two-columns">
+
+                <div class="form-group">
+
+                    <label>Company</label>
+
+                    <input
+                        type="text"
+                        name="company"
+                        placeholder="Example: Google">
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>Position</label>
+
+                    <input
+                        type="text"
+                        name="position"
+                        placeholder="Example: Software Engineer Intern">
+
+                </div>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>Resume PDF</label>
+
+                <div class="upload-box">
+
+                    <input
+                        type="file"
+                        name="resume"
+                        accept=".pdf"
+                        required>
+
+                    <p>Upload your resume in PDF format</p>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>Job Description</label>
+
+                <textarea
+                    name="job_description"
+                    rows="12"
+                    placeholder="Paste the complete job description here..."
+                    required></textarea>
+
+            </div>
+
+
+            <button class="primary-button" type="submit">
+                Analyze Resume
+            </button>
+
+        </form>
+
+    </section>
+
+
+    <section class="features">
+
+        <div class="feature">
+            <h3>Match Score</h3>
+            <p>
+                See what percentage of detected job skills
+                appear in your resume.
+            </p>
+        </div>
+
+        <div class="feature">
+            <h3>Skill Gap</h3>
+            <p>
+                Quickly identify requested skills that were
+                not detected in your resume.
+            </p>
+        </div>
+
+        <div class="feature">
+            <h3>Job Tracker</h3>
+            <p>
+                Save analyzed jobs and keep track of your
+                application progress.
+            </p>
+        </div>
+
+    </section>
+
+</main>
+
+<footer>
+    Built with Python, Flask, SQLite &amp; PyPDF2
+</footer>
+
+</body>
+</html>
