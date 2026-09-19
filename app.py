@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 import sqlite3
 
 from matcher import extract_text_from_pdf, analyze_resume
@@ -211,6 +211,52 @@ def delete_application(application_id):
 
     return redirect(url_for("tracker"))
 
+@app.route("/api/jobs", methods=["GET"])
+def get_jobs():
+    connection = get_db_connection()
+
+    applications = connection.execute(
+        "SELECT * FROM applications ORDER BY id DESC"
+    ).fetchall()
+
+    connection.close()
+
+    jobs = []
+
+    for application in applications:
+        jobs.append({
+            "id": application["id"],
+            "company": application["company"],
+            "position": application["position"],
+            "score": application["score"],
+            "status": application["status"],
+            "date_added": application["date_added"]
+        })
+
+    return jsonify(jobs)
+
+@app.route("/api/jobs/<int:job_id>", methods=["GET"])
+def get_job(job_id):
+    connection = get_db_connection()
+
+    job = connection.execute(
+        "SELECT * FROM applications WHERE id = ?",
+        (job_id,)
+    ).fetchone()
+
+    connection.close()
+
+    if job is None:
+        return jsonify({"error": "Job not found"}), 404
+
+    return jsonify({
+        "id": job["id"],
+        "company": job["company"],
+        "position": job["position"],
+        "score": job["score"],
+        "status": job["status"],
+        "date_added": job["date_added"]
+    })
 
 if __name__ == "__main__":
     app.run(debug=True)
