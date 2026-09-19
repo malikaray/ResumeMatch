@@ -98,9 +98,11 @@
 
                     <input
                         type="file"
+                        id="resume"
                         name="resume"
                         accept=".pdf"
                         required>
+                    <p id="file-name">No file selected</p>
 
                     <p>Upload your resume in PDF format</p>
 
@@ -110,14 +112,13 @@
 
 
             <div class="form-group">
-
-                <label>Job Description</label>
-
+                <label for="job-description">Job Description</label>
                 <textarea
+                    id="job-description"
                     name="job_description"
-                    rows="12"
                     placeholder="Paste the complete job description here..."
                     required></textarea>
+                <p id="character-count">0 characters</p>
 
             </div>
 
@@ -164,6 +165,6 @@
 <footer>
     Built with Python, Flask, SQLite &amp; PyPDF2
 </footer>
-
+<script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
