@@ -2,19 +2,54 @@ import re
 from PyPDF2 import PdfReader
 
 
-SKILLS = [
-    "python", "java", "c++", "javascript",
-    "html", "css", "sql", "react",
-    "git", "github", "aws", "docker",
-    "linux", "excel", "power bi", "tableau",
-    "flask", "django", "fastapi",
-    "node.js", "mongodb", "mysql",
-    "postgresql", "azure", "tensorflow",
-    "pytorch", "pandas", "numpy",
-    "machine learning", "data analysis",
-    "data visualization", "rest api",
-    "kubernetes"
-]
+# Technical skills that ResumeMatch can recognize
+SKILLS = {
+    "python": ["python"],
+    "java": ["java"],
+    "c++": ["c++"],
+    "c#": ["c#"],
+    "javascript": ["javascript", "js"],
+    "typescript": ["typescript"],
+    "html": ["html", "html5"],
+    "css": ["css", "css3"],
+    "sql": ["sql"],
+    "react": ["react", "react.js", "reactjs"],
+    "angular": ["angular"],
+    "vue": ["vue", "vue.js", "vuejs"],
+    "node.js": ["node.js", "nodejs"],
+    "flask": ["flask"],
+    "django": ["django"],
+    "fastapi": ["fastapi"],
+    "spring boot": ["spring boot"],
+    "git": ["git"],
+    "github": ["github"],
+    "gitlab": ["gitlab"],
+    "aws": ["aws", "amazon web services"],
+    "azure": ["azure", "microsoft azure"],
+    "docker": ["docker"],
+    "kubernetes": ["kubernetes"],
+    "linux": ["linux"],
+    "mongodb": ["mongodb"],
+    "mysql": ["mysql"],
+    "postgresql": ["postgresql", "postgres"],
+    "sqlite": ["sqlite"],
+    "pandas": ["pandas"],
+    "numpy": ["numpy"],
+    "tensorflow": ["tensorflow"],
+    "pytorch": ["pytorch"],
+    "machine learning": ["machine learning"],
+    "data analysis": ["data analysis"],
+    "data visualization": ["data visualization"],
+    "power bi": ["power bi"],
+    "tableau": ["tableau"],
+    "excel": ["excel", "microsoft excel"],
+    "rest api": ["rest api", "restful api", "restful apis"],
+    "json": ["json"],
+    "ci/cd": ["ci/cd", "continuous integration", "continuous delivery"],
+    "agile": ["agile"],
+    "data structures": ["data structures"],
+    "algorithms": ["algorithms"]
+}
 
 
 def extract_text_from_pdf(file):
@@ -30,30 +65,32 @@ def extract_text_from_pdf(file):
     return text
 
 
-def contains_skill(text, skill):
+def contains_skill(text, skill_variations):
     text = text.lower()
-    skill = skill.lower()
 
-    pattern = r"(?<!\w)" + re.escape(skill) + r"(?!\w)"
+    for variation in skill_variations:
+        variation = variation.lower()
 
-    return re.search(pattern, text) is not None
+        pattern = r"(?<!\w)" + re.escape(variation) + r"(?!\w)"
+
+        if re.search(pattern, text):
+            return True
+
+    return False
 
 
 def analyze_resume(resume_text, job_description):
-
     matched_skills = []
     missing_skills = []
     required_skills = []
 
-    for skill in SKILLS:
+    for skill, variations in SKILLS.items():
 
-        if contains_skill(job_description, skill):
-
+        if contains_skill(job_description, variations):
             required_skills.append(skill)
 
-            if contains_skill(resume_text, skill):
+            if contains_skill(resume_text, variations):
                 matched_skills.append(skill)
-
             else:
                 missing_skills.append(skill)
 
