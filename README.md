@@ -1,67 +1,75 @@
 # ResumeMatch
 
-ResumeMatch is a project I built to practice Python and web development. The idea is simple: upload a resume, paste a job description, and the program checks how well the skills in the resume match the skills needed for the job.
+ResumeMatch is a web application I built to practice Python and web development. It allows users to upload a resume, paste a job description, and see how well their technical skills match the job.
 
-I also added a job tracker so the user can save jobs and keep track of their application status.
+I also added a job application tracker so users can save jobs and keep track of their application status.
 
-## What it does
+## Features
 
 - Upload a resume as a PDF
-- Read text from the resume
+- Extract text from the resume
 - Compare resume skills with a job description
+- Recognize different names for the same technical skill
 - Calculate a match percentage
-- Show matched skills
-- Show missing skills
+- Show matched and missing skills
 - Give a recommendation based on the match
-- Save jobs to a job tracker
-- Change a job status to Saved, Applied, Interview, Offer, or Rejected
-- Delete jobs from the tracker
-- Show total jobs, interviews, offers, and average match score
+- Save jobs to a job application tracker
+- Update application status
+- Delete saved jobs
+- View total jobs, interviews, offers, and average match score
+- Access saved jobs through API endpoints
 
-## Technologies I used
+## Technologies Used
 
 - Python
 - Flask
 - SQLite
 - HTML
 - CSS
+- JavaScript
 - PyPDF2
 - Git and GitHub
 
-## How the matching works
+## How the Matching Works
 
-The program first looks for skills mentioned in the job description. It then checks if those same skills can be found in the resume.
+ResumeMatch looks for technical skills in the job description and checks whether those skills are also found in the uploaded resume.
 
-The score is calculated like this:
+The matcher can recognize different names for some skills. For example, AWS and Amazon Web Services are treated as the same skill.
 
-Match Score = (matched skills / required skills) * 100
+The score is calculated using:
 
-For example, if 8 out of 10 detected skills are found in the resume, the match score is 80%.
+`Match Score = (Matched Skills / Required Skills) × 100`
 
-## Running the project
+## API Endpoints
 
-First install the required packages:
+Get all saved jobs:
 
-    pip install -r requirements.txt
+`GET /api/jobs`
 
-Then run:
+Get one saved job by ID:
 
-    py app.py
+`GET /api/jobs/<id>`
 
-Open the local address shown in the terminal. By default it should be:
+## Running the Project
 
-    http://127.0.0.1:5000
+Install the required packages:
 
-## Why I made this
+```bash
+pip install -r requirements.txt
+```
 
-I wanted to build something related to the job search process while improving my Python skills. I started with a simple Python program that compared a list of skills. After getting that working, I turned it into a Flask web application, added PDF resume reading, and then added a job application tracker using SQLite.
+Run the application:
 
-I'm still improving the project as I learn more.
+```bash
+py app.py
+```
 
-## What I want to add next
+Then open:
 
-- JavaScript for more interactive features
-- API endpoints
-- Better skill detection
-- Search and filters for saved jobs
-- A standalone app version
+`http://127.0.0.1:5000`
+
+## Why I Made This
+
+I wanted to build something related to the job search process while improving my Python and web development skills. I started with a simple resume matcher and gradually added PDF processing, Flask, SQLite, a job tracker, API endpoints, and improved skill detection.
+
+I'm continuing to improve the project as I learn more.
