@@ -3,3 +3,6 @@ __pycache__/
 .env
 database.db
 uploads/
+build/
+dist/
+*.spec

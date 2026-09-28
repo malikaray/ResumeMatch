@@ -16,9 +16,9 @@ def get_db_connection():
 
 
 def create_database():
-
     connection = get_db_connection()
 
+    # Job Tracker table
     connection.execute("""
         CREATE TABLE IF NOT EXISTS applications (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -30,12 +30,29 @@ def create_database():
         )
     """)
 
+    # Match History table
+    connection.execute("""
+        CREATE TABLE IF NOT EXISTS match_history (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            company TEXT,
+            position TEXT,
+            score REAL,
+            matched_skills TEXT,
+            missing_skills TEXT,
+            date_analyzed TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
     connection.commit()
     connection.close()
 
 
 create_database()
 
+
+# -------------------------
+# Resume Analyzer
+# -------------------------
 
 @app.route("/", methods=["GET", "POST"])
 def home():
@@ -79,6 +96,27 @@ def home():
                 job_description
             )
 
+            # Automatically save analysis to Match History
+            connection = get_db_connection()
+
+            connection.execute(
+                """
+                INSERT INTO match_history
+                (company, position, score, matched_skills, missing_skills)
+                VALUES (?, ?, ?, ?, ?)
+                """,
+                (
+                    company.strip() or "Not specified",
+                    position.strip() or "Not specified",
+                    result["score"],
+                    ", ".join(result["matched"]),
+                    ", ".join(result["missing"])
+                )
+            )
+
+            connection.commit()
+            connection.close()
+
             return render_template(
                 "results.html",
                 result=result,
@@ -88,13 +126,18 @@ def home():
 
         except Exception as e:
             print("Error processing resume:", e)
+
             return render_template(
                 "index.html",
                 error="The resume could not be processed. Please try another PDF."
-    )
+            )
 
     return render_template("index.html")
 
+
+# -------------------------
+# Save Job to Tracker
+# -------------------------
 
 @app.route("/save", methods=["POST"])
 def save_application():
@@ -108,6 +151,11 @@ def save_application():
 
     if not position:
         position = "Not specified"
+
+    try:
+        score = float(score)
+    except (TypeError, ValueError):
+        score = 0
 
     connection = get_db_connection()
 
@@ -125,6 +173,48 @@ def save_application():
 
     return redirect(url_for("tracker"))
 
+
+# -------------------------
+# Match History
+# -------------------------
+
+@app.route("/history")
+def history():
+
+    connection = get_db_connection()
+
+    matches = connection.execute(
+        "SELECT * FROM match_history ORDER BY id DESC"
+    ).fetchall()
+
+    connection.close()
+
+    return render_template(
+        "history.html",
+        matches=matches
+    )
+
+
+# Delete a Match History entry
+@app.route("/history/delete/<int:match_id>", methods=["POST"])
+def delete_history(match_id):
+
+    connection = get_db_connection()
+
+    connection.execute(
+        "DELETE FROM match_history WHERE id = ?",
+        (match_id,)
+    )
+
+    connection.commit()
+    connection.close()
+
+    return redirect(url_for("history"))
+
+
+# -------------------------
+# Job Tracker
+# -------------------------
 
 @app.route("/tracker")
 def tracker():
@@ -168,6 +258,10 @@ def tracker():
     )
 
 
+# -------------------------
+# Update Job Status
+# -------------------------
+
 @app.route("/status/<int:application_id>", methods=["POST"])
 def update_status(application_id):
 
@@ -196,6 +290,10 @@ def update_status(application_id):
     return redirect(url_for("tracker"))
 
 
+# -------------------------
+# Delete Job
+# -------------------------
+
 @app.route("/delete/<int:application_id>", methods=["POST"])
 def delete_application(application_id):
 
@@ -211,8 +309,14 @@ def delete_application(application_id):
 
     return redirect(url_for("tracker"))
 
+
+# -------------------------
+# API - Get All Jobs
+# -------------------------
+
 @app.route("/api/jobs", methods=["GET"])
 def get_jobs():
+
     connection = get_db_connection()
 
     applications = connection.execute(
@@ -235,8 +339,14 @@ def get_jobs():
 
     return jsonify(jobs)
 
+
+# -------------------------
+# API - Get One Job
+# -------------------------
+
 @app.route("/api/jobs/<int:job_id>", methods=["GET"])
 def get_job(job_id):
+
     connection = get_db_connection()
 
     job = connection.execute(
@@ -257,6 +367,11 @@ def get_job(job_id):
         "status": job["status"],
         "date_added": job["date_added"]
     })
+
+
+# -------------------------
+# Run Website
+# -------------------------
 
 if __name__ == "__main__":
     app.run(debug=True)

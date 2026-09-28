@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Match History | ResumeMatch</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+</head>
+
+<body>
+
+<header>
+    <div class="logo">ResumeMatch</div>
+
+    <nav>
+        <a href="{{ url_for('home') }}">Analyze</a>
+        <a href="{{ url_for('tracker') }}">Job Tracker</a>
+        <a href="{{ url_for('history') }}">Match History</a>
+    </nav>
+</header>
+
+
+<main class="container">
+
+    <div class="page-heading">
+        <h1>Match History</h1>
+
+        <p>
+            Review your previous resume and job description analyses.
+        </p>
+    </div>
+
+
+    {% if matches %}
+
+        {% for match in matches %}
+
+        <div class="history-card">
+
+            <div class="history-top">
+
+                <div>
+                    <h2>{{ match["company"] }}</h2>
+                    <p>{{ match["position"] }}</p>
+                </div>
+
+                <div class="history-score">
+                    {{ match["score"] }}%
+                </div>
+
+            </div>
+
+
+            <div class="history-section">
+
+                <h3>Matched Skills</h3>
+
+                <div class="skill-list matched-skills">
+
+                    {% if match["matched_skills"] %}
+
+                        {% for skill in match["matched_skills"].split(", ") %}
+                            <span class="skill-tag">
+                                {{ skill }}
+                            </span>
+                        {% endfor %}
+
+                    {% else %}
+
+                        <p>No matched skills.</p>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <div class="history-section">
+
+                <h3>Missing Skills</h3>
+
+                <div class="skill-list missing-skills">
+
+                    {% if match["missing_skills"] %}
+
+                        {% for skill in match["missing_skills"].split(", ") %}
+                            <span class="skill-tag">
+                                {{ skill }}
+                            </span>
+                        {% endfor %}
+
+                    {% else %}
+
+                        <p>No missing skills.</p>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <div class="history-date">
+                Analyzed: {{ match["date_analyzed"] }}
+            </div>
+
+
+            <form
+                action="{{ url_for('delete_history', match_id=match['id']) }}"
+                method="POST"
+                onsubmit="return confirm('Delete this match from your history?');"
+            >
+                <button
+                    type="submit"
+                    class="history-delete-button"
+                >
+                    Delete
+                </button>
+            </form>
+
+        </div>
+
+        {% endfor %}
+
+
+    {% else %}
+
+        <div class="empty-history">
+
+            <h2>No match history yet</h2>
+
+            <p>
+                Analyze a resume and job description to see your results here.
+            </p>
+
+            <a href="{{ url_for('home') }}">
+                Analyze a Resume
+            </a>
+
+        </div>
+
+    {% endif %}
+
+</main>
+
+</body>
+</html>
